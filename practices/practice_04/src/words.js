@@ -18,8 +18,21 @@ export const CURATED_PAIRS = [
   { start: "Арбуз", target: "Большой адронный коллайдер" },
   { start: "Спичка", target: "Полярное сияние" },
   { start: "Микроволновка", target: "Древний Египет" },
-  { start: "Зонтик", target: "Космическая станция" },
-  { start: "Подушка", target: "Эверест" }
+  { start: "Подушка", target: "Эверест" },
+  { start: "Гамбургер", target: "Квантовая физика" },
+  { start: "Пингвин", target: "Сахара" },
+  { start: "Гитара", target: "Телескоп Хаббл" },
+  { start: "Бабочка", target: "Атомная подводная лодка" },
+  { start: "Карамель", target: "Суперкомпьютер" },
+  { start: "Ластик", target: "Большой взрыв" },
+  { start: "Утюг", target: "Бермудский треугольник" },
+  { start: "Черепаха", target: "Сверхновая звезда" },
+  { start: "Качели", target: "Гравитационные волны" },
+  { start: "Шоколад", target: "Антарктида" },
+  { start: "Валенок", target: "Силиконовая долина" },
+  { start: "Пуговица", target: "Млечный Путь" },
+  { start: "Пылесос", target: "Венера" },
+  { start: "Кочерга", target: "Нейросеть" }
 ];
 
 export function getRandomPair(excludePair = null) {

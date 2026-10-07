@@ -98,3 +98,97 @@ export function playVictory() {
     // Безопасное подавление
   }
 }
+
+export function playApprove() {
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+
+    const notes = [587.33, 880.0];
+    const now = ctx.currentTime;
+
+    notes.forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const startAt = now + idx * 0.08;
+
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, startAt);
+
+      gain.gain.setValueAtTime(0.001, startAt);
+      gain.gain.linearRampToValueAtTime(0.18, startAt + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.0001, startAt + 0.4);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(startAt);
+      osc.stop(startAt + 0.45);
+    });
+  } catch (err) {
+    // Безопасное подавление
+  }
+}
+
+export function playDispute() {
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+
+    const notes = [330.0, 277.18];
+    const now = ctx.currentTime;
+
+    notes.forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const startAt = now + idx * 0.1;
+
+      osc.type = "sawtooth";
+      osc.frequency.setValueAtTime(freq, startAt);
+
+      gain.gain.setValueAtTime(0.001, startAt);
+      gain.gain.linearRampToValueAtTime(0.12, startAt + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, startAt + 0.35);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(startAt);
+      osc.stop(startAt + 0.4);
+    });
+  } catch (err) {
+    // Безопасное подавление
+  }
+}
+
+export function playPassTurn() {
+  try {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+
+    const notes = [440.0, 554.37, 659.25];
+    const now = ctx.currentTime;
+
+    notes.forEach((freq, idx) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      const startAt = now + idx * 0.07;
+
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, startAt);
+
+      gain.gain.setValueAtTime(0.001, startAt);
+      gain.gain.linearRampToValueAtTime(0.15, startAt + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.0001, startAt + 0.5);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(startAt);
+      osc.stop(startAt + 0.55);
+    });
+  } catch (err) {
+    // Безопасное подавление
+  }
+}
+
