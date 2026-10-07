@@ -2,20 +2,28 @@
 """
 scripts/test_mcp.py — Автоматическая демонстрация работы собственного MCP-сервера.
 Проверяет рукопожатие, discovery инструментов, успешный вызов и обработку ошибок.
+Работает из любой рабочей директории.
 """
 import sys
+import os
 import json
 import subprocess
 
+# Определяем абсолютный путь к mcp_server.py рядом с этим скриптом
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+SERVER_PATH = os.path.join(SCRIPT_DIR, "mcp_server.py")
+
 def call_mcp(req: dict) -> dict:
     proc = subprocess.Popen(
-        [sys.executable, "scripts/mcp_server.py"],
+        [sys.executable, SERVER_PATH],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True
     )
-    stdout, _ = proc.communicate(json.dumps(req) + "\n")
+    stdout, stderr = proc.communicate(json.dumps(req) + "\n")
+    if proc.returncode != 0 or not stdout.strip():
+        raise RuntimeError(f"Сервер завершился с кодом {proc.returncode}. Stderr: {stderr}")
     return json.loads(stdout.strip())
 
 def main():
@@ -76,7 +84,7 @@ def main():
     error_res = call_mcp(error_call)
     print(f"   Запрос с дубликатом: Чайник ➔ ['Кипяток', 'чайник', 'Космос'] ➔ Чёрная дыра")
     print(f"   isError: {error_res['result']['isError']}")
-    print(f"   Ответ об ошибке: {error_res['result']['content'][0]['text']}\n")
+    print(f"   Ответ об ошибке: {error_res['result']['content'][0]["text"]}\n")
 
     print("🎉 Все сценарии собственного MCP-сервера успешно подтверждены!")
 
