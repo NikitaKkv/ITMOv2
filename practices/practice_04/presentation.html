@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WordBridge — Отчёт и демонстрация проекта (Практика 4)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4F46E5;
+      --primary-hover: #4338CA;
+      --bg: #F8FAFC;
+      --surface: #FFFFFF;
+      --text: #0F172A;
+      --muted: #64748B;
+      --border: #E2E8F0;
+      --success: #059669;
+      --error: #DC2626;
+      --font: 'Inter', -apple-system, sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      padding: 24px 20px 48px;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    header {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+    .header-main h1 {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+    .header-main p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .header-badges {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .badge {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: #F1F5F9;
+      color: #334155;
+      border: 1px solid var(--border);
+    }
+    .badge-success {
+      background: #ECFDF5;
+      color: #065F46;
+      border-color: #A7F3D0;
+    }
+
+    /* Grid Layout */
+    .grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 20px;
+    }
+    @media (max-width: 992px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    .col {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #1E293B;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+    }
+    .card-tag {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    /* Command Blocks */
+    .cmd-group {
+      margin-bottom: 14px;
+    }
+    .cmd-group:last-child { margin-bottom: 0; }
+    .cmd-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .cmd-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1E293B;
+    }
+    .cmd-desc {
+      font-size: 11px;
+      color: var(--muted);
+    }
+    .cmd-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #0F172A;
+      border-radius: 8px;
+      padding: 8px 12px;
+      gap: 10px;
+    }
+    .cmd-code {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: #E2E8F0;
+      white-space: nowrap;
+      overflow-x: auto;
+    }
+    .btn-copy {
+      background: #334155;
+      color: #F8FAFC;
+      border: none;
+      border-radius: 5px;
+      padding: 4px 10px;
+      font-family: var(--mono);
+      font-size: 11px;
+      cursor: pointer;
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+    .btn-copy:hover { background: var(--primary); }
+    .btn-copy.copied { background: var(--success); }
+
+    /* Features List */
+    .feature-item {
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #F1F5F9;
+    }
+    .feature-item:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+    .feature-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #0F172A;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .feature-desc {
+      font-size: 13px;
+      color: #475569;
+      line-height: 1.45;
+    }
+
+    /* Sub-callouts */
+    .callout {
+      background: #F8FAFC;
+      border-left: 3px solid var(--primary);
+      padding: 8px 12px;
+      border-radius: 0 6px 6px 0;
+      font-size: 12.5px;
+      color: #334155;
+      margin-top: 6px;
+    }
+
+    /* File Links Grid */
+    .links-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    .link-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #F8FAFC;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: #1E293B;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+    .link-chip:hover {
+      background: #FFFFFF;
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* JSON Spec Section */
+    details {
+      background: #F8FAFC;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-top: 12px;
+      font-size: 12.5px;
+    }
+    details summary {
+      cursor: pointer;
+      font-weight: 600;
+      color: #334155;
+      user-select: none;
+    }
+    details .cmd-group { margin-top: 10px; }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #0F172A;
+      color: #FFF;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-family: var(--mono);
+      font-size: 12px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: all 0.2s ease;
+      pointer-events: none;
+      z-index: 999;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="header-main">
+        <h1>WordBridge — Ассоциативный мост</h1>
+        <p>Практика 4: Разработка двух фич с AI-агентом · ИТМО</p>
+      </div>
+      <div class="header-badges">
+        <span class="badge">Git: practice4</span>
+        <span class="badge badge-success">8/8 тестов пройдены</span>
+        <span class="badge">MCP: JSON-RPC 2.0</span>
+      </div>
+    </header>
+
+    <div class="grid">
+
+      <!-- LEFT COLUMN: ARCHITECTURE & RUNNER -->
+      <div class="col">
+
+        <!-- 1. Verification & CLI Runner -->
+        <div class="card">
+          <div class="card-title">
+            <span>Запуск и верификация проекта</span>
+            <span class="card-tag">CLI Commands</span>
+          </div>
+
+          <!-- Run Game -->
+          <div class="cmd-group">
+            <div class="cmd-header">
+              <span class="cmd-name">1. Локальный сервер игры (Vanilla JS + HTML5)</span>
+              <a href="http://localhost:8000" target="_blank" style="font-size: 11px; color: var(--primary); text-decoration: none; font-weight: 600;">localhost:8000 ↗</a>
+            </div>
+            <div class="cmd-box">
+              <span class="cmd-code">python3 -m http.server 8000 --directory src</span>
+              <button class="btn-copy" onclick="copy('python3 -m http.server 8000 --directory src', this)">Копировать</button>
+            </div>
+          </div>
+
+          <!-- Deterministic Checks -->
+          <div class="cmd-group">
+            <div class="cmd-header">
+              <span class="cmd-name">2. Детерминированные проверки (Синтаксис JS + 8 TDD-тестов)</span>
+              <span class="cmd-desc">scripts/check_all.sh</span>
+            </div>
+            <div class="cmd-box">
+              <span class="cmd-code">./scripts/check_all.sh</span>
+              <button class="btn-copy" onclick="copy('./scripts/check_all.sh', this)">Копировать</button>
+            </div>
+          </div>
+
+          <!-- MCP Runner -->
+          <div class="cmd-group">
+            <div class="cmd-header">
+              <span class="cmd-name">3. Прогон собственного MCP-сервера (4 сценария)</span>
+              <span class="cmd-desc">Handshake, Tools/list, Success, Error</span>
+            </div>
+            <div class="cmd-box">
+              <span class="cmd-code">python3 scripts/test_mcp.py</span>
+              <button class="btn-copy" onclick="copy('python3 scripts/test_mcp.py', this)">Копировать</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. MCP Server Details -->
+        <div class="card">
+          <div class="card-title">
+            <span>Собственный MCP-сервер (JSON-RPC 2.0)</span>
+            <span class="card-tag">scripts/mcp_server.py</span>
+          </div>
+
+          <p style="font-size: 13px; color: #475569; margin-bottom: 12px;">
+            Реализован инструмент <code>validate_association_bridge</code> на чистом Python без сторонних зависимостей. Принимает JSON через stdin и возвращает результат в stdout.
+          </p>
+
+          <details>
+            <summary>Прямой вызов через stdin/stdout (демонстрация протокола)</summary>
+            
+            <div class="cmd-group">
+              <div class="cmd-header">
+                <span class="cmd-name" style="color: var(--success);">Успешный вызов (валидный мост):</span>
+              </div>
+              <div class="cmd-box">
+                <span class="cmd-code">echo '{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"validate_association_bridge","arguments":{"start":"Чайник","target":"Чёрная дыра","chain":["Кипяток","Пар","Космос"]}}}' | python3 scripts/mcp_server.py</span>
+                <button class="btn-copy" onclick="copy('echo \'{\x22jsonrpc\x22:\x222.0\x22,\x22id\x22:1,\x22method\x22:\x22tools/call\x22,\x22params\x22:{\x22name\x22:\x22validate_association_bridge\x22,\x22arguments\x22:{\x22start\x22:\x22Чайник\x22,\x22target\x22:\x22Чёрная дыра\x22,\x22chain\x22:[\x22Кипяток\x22,\x22Пар\x22,\x22Космос\x22]}}}\' | python3 scripts/mcp_server.py', this)">Копировать</button>
+              </div>
+            </div>
+
+            <div class="cmd-group">
+              <div class="cmd-header">
+                <span class="cmd-name" style="color: var(--error);">Обработка ошибки (повтор слова):</span>
+              </div>
+              <div class="cmd-box">
+                <span class="cmd-code">echo '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"validate_association_bridge","arguments":{"start":"Чайник","target":"Чёрная дыра","chain":["Кипяток","чайник","Космос"]}}}' | python3 scripts/mcp_server.py</span>
+                <button class="btn-copy" onclick="copy('echo \'{\x22jsonrpc\x22:\x222.0\x22,\x22id\x22:2,\x22method\x22:\x22tools/call\x22,\x22params\x22:{\x22name\x22:\x22validate_association_bridge\x22,\x22arguments\x22:{\x22start\x22:\x22Чайник\x22,\x22target\x22:\x22Чёрная дыра\x22,\x22chain\x22:[\x22Кипяток\x22,\x22чайник\x22,\x22Космос\x22]}}}\' | python3 scripts/mcp_server.py', this)">Копировать</button>
+              </div>
+            </div>
+          </details>
+        </div>
+
+        <!-- 3. Project Files -->
+        <div class="card">
+          <div class="card-title">
+            <span>Файлы проекта и окружения</span>
+            <span class="card-tag">Репозиторий</span>
+          </div>
+          <div class="links-grid">
+            <a class="link-chip" href="file:///home/nikita/ITMO/ITMOv2/practices/practice_04/AGENTS.md">📄 AGENTS.md</a>
+            <a class="link-chip" href="file:///home/nikita/ITMO/ITMOv2/practices/practice_04/reflection.md">💭 reflection.md</a>
+            <a class="link-chip" href="file:///home/nikita/ITMO/ITMOv2/practices/practice_04/mcp_config.json">⚙️ mcp_config.json</a>
+            <a class="link-chip" href="file:///home/nikita/ITMO/ITMOv2/practices/practice_04/scripts/mcp_server.py">🐍 mcp_server.py</a>
+            <a class="link-chip" href="file:///home/nikita/ITMO/ITMOv2/practices/practice_04/.agents/hooks.json">🪝 hooks.json</a>
+            <a class="link-chip" href="file:///home/nikita/ITMO/ITMOv2/practices/practice_04/tests/test_logic.py">🧪 test_logic.py</a>
+            <a class="link-chip" href="file:///home/nikita/ITMO/ITMOv2/practices/practice_04/docs/front.md">🎨 docs/front.md</a>
+            <a class="link-chip" href="file:///home/nikita/ITMO/ITMOv2/practices/practice_04/docs/SKILL_ANALYSIS.md">📝 docs/SKILL_ANALYSIS.md</a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN: ARCHITECTURE & RETROSPECTIVE -->
+      <div class="col">
+
+        <!-- 4. Features & Worktree -->
+        <div class="card">
+          <div class="card-title">
+            <span>Реализованный функционал</span>
+            <span class="card-tag">Фичи A и B</span>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-title">Фича A: Построитель ассоциативного моста (Chain Builder)</div>
+            <div class="feature-desc">
+              Интерактивный ввод узлов между стартовым и целевым словом, счётчик длины моста, стек отмены хода (Undo), динамическая проверка дубликатов, автоматическое замыкание с Web Audio API аккордом.
+            </div>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-title">Фича B: Режим дуэли (Hot-seat Duel & Showdown)</div>
+            <div class="feature-desc">
+              Режимы «Гонка» (одна пара на двоих) и «Вызов» (загадка оппоненту), скрытый экран смены игрока, финальный экран Showdown со сравнением путей и кнопками взаимного судейства.
+            </div>
+            <div class="callout">
+              <strong>Изоляция процесса:</strong> Фича B разрабатывалась в изолированном <code>git worktree</code> и прошла независимый аудит субагентом <code>@explore</code> перед merge.
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. Methodology: TDD & Hooks -->
+        <div class="card">
+          <div class="card-title">
+            <span>Методология и автоматизация</span>
+            <span class="card-tag">Скиллы и хуки</span>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-title">Скилл TDD (Test-Driven Development)</div>
+            <div class="feature-desc">
+              Реализован по методологии Red-Green-Refactor: запрет на написание кода до падающего теста, тестирование контрактов на границах («seams»). 8 тестов в <code>tests/test_logic.py</code> покрывают базовую логику.
+            </div>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-title">Двухуровневая система хуков</div>
+            <div class="feature-desc">
+              • <strong>Агентский хук:</strong> <code>.agents/hooks.json</code> (событие <code>PostToolUse</code> запускает проверки сразу после редактирования файлов).<br>
+              • <strong>Git-хук:</strong> <code>.git/hooks/pre-commit</code> (блокирует коммит при падении синтаксиса или тестов).
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. Retrospective -->
+        <div class="card">
+          <div class="card-title">
+            <span>Ретроспектива разработки</span>
+            <span class="card-tag">reflection.md</span>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-title">Что помогло:</div>
+            <div class="feature-desc">
+              • Файл <code>AGENTS.md</code> избавил от необходимости повторно описывать контекст и архитектуру в каждой сессии.<br>
+              • Автоматические хуки сняли необходимость ручного регрессионного тестирования после правок.
+            </div>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-title">Что создавало трудности:</div>
+            <div class="feature-desc">
+              • Оверинжиниринг вокруг сторонних MCP: попытка использовать сторонние решения требовала токенов и зависимостей, тогда как концептуально MCP — это легковесный процесс stdin/stdout.
+            </div>
+          </div>
+
+          <div class="feature-item">
+            <div class="feature-title">Точки вмешательства человека:</div>
+            <div class="feature-desc">
+              1. Выбор концепции интеллектуальной игры вместо шаблонных вариантов (to-do, трекеры).<br>
+              2. Исправление относительных путей в тестовом клиенте MCP (<code>test_mcp.py</code>).<br>
+              3. Устранение коллизии вложенного репозитория <code>.git/</code> при первичном переносе файлов.
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Команда скопирована</div>
+
+  <script>
+    function copy(text, btn) {
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = document.getElementById("toast");
+        toast.classList.add("show");
+        const originalText = btn.textContent;
+        btn.classList.add("copied");
+        btn.textContent = "Скопировано";
+        setTimeout(() => {
+          toast.classList.remove("show");
+          btn.classList.remove("copied");
+          btn.textContent = originalText;
+        }, 1500);
+      });
+    }
+  </script>
+</body>
+</html>
