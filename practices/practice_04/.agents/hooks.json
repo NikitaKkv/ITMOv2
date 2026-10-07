@@ -1,0 +1,17 @@
+{
+  "test-and-syntax-checker": {
+    "enabled": true,
+    "PostToolUse": [
+      {
+        "matcher": "write_to_file|replace_file_content",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "../scripts/hook_post_tool.sh",
+            "timeout": 20
+          }
+        ]
+      }
+    ]
+  }
+}
