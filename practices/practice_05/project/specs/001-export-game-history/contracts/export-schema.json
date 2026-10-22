@@ -1,0 +1,188 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://wordbridge.game/schemas/export-envelope-v1.json",
+  "title": "WordBridgeExportEnvelope",
+  "description": "JSON schema for WordBridge game session history export",
+  "type": "object",
+  "required": ["schemaVersion", "appName", "exportedAt", "summary", "rounds"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "appName": {
+      "type": "string",
+      "const": "WordBridge"
+    },
+    "exportedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "summary": {
+      "$ref": "#/$defs/SessionSummary"
+    },
+    "rounds": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/GameRoundRecord"
+      }
+    }
+  },
+  "$defs": {
+    "SessionSummary": {
+      "type": "object",
+      "required": ["totalRounds", "soloRoundsCount", "duelRoundsCount", "averageSteps", "duelStats"],
+      "additionalProperties": false,
+      "properties": {
+        "totalRounds": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "soloRoundsCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "duelRoundsCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "averageSteps": {
+          "type": "number",
+          "minimum": 0
+        },
+        "duelStats": {
+          "type": "object",
+          "required": ["player1Wins", "player2Wins", "draws", "disputedDraws"],
+          "additionalProperties": false,
+          "properties": {
+            "player1Wins": { "type": "integer", "minimum": 0 },
+            "player2Wins": { "type": "integer", "minimum": 0 },
+            "draws": { "type": "integer", "minimum": 0 },
+            "disputedDraws": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    },
+    "GameRoundRecord": {
+      "type": "object",
+      "required": ["id", "mode", "submode", "completedAt", "data"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "mode": {
+          "type": "string",
+          "enum": ["solo", "duel"]
+        },
+        "submode": {
+          "type": ["string", "null"],
+          "enum": ["race", "challenge", null]
+        },
+        "completedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "data": {
+          "oneOf": [
+            { "$ref": "#/$defs/SoloRoundData" },
+            { "$ref": "#/$defs/DuelRoundData" }
+          ]
+        }
+      }
+    },
+    "SoloRoundData": {
+      "type": "object",
+      "required": ["startWord", "targetWord", "chain", "steps"],
+      "additionalProperties": false,
+      "properties": {
+        "startWord": {
+          "type": "string",
+          "minLength": 1
+        },
+        "targetWord": {
+          "type": "string",
+          "minLength": 1
+        },
+        "chain": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "steps": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "DuelRoundData": {
+      "type": "object",
+      "required": ["submode", "player1", "player2", "outcome"],
+      "additionalProperties": false,
+      "properties": {
+        "submode": {
+          "type": "string",
+          "enum": ["race", "challenge"]
+        },
+        "player1": {
+          "$ref": "#/$defs/PlayerRoundDetail"
+        },
+        "player2": {
+          "$ref": "#/$defs/PlayerRoundDetail"
+        },
+        "outcome": {
+          "$ref": "#/$defs/DuelOutcome"
+        }
+      }
+    },
+    "PlayerRoundDetail": {
+      "type": "object",
+      "required": ["pair", "chain", "steps", "isDisputed"],
+      "additionalProperties": false,
+      "properties": {
+        "pair": {
+          "type": "object",
+          "required": ["start", "target"],
+          "additionalProperties": false,
+          "properties": {
+            "start": { "type": "string", "minLength": 1 },
+            "target": { "type": "string", "minLength": 1 }
+          }
+        },
+        "chain": {
+          "type": "array",
+          "minItems": 2,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "steps": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "isDisputed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "DuelOutcome": {
+      "type": "object",
+      "required": ["winner", "reason"],
+      "additionalProperties": false,
+      "properties": {
+        "winner": {
+          "type": "string",
+          "enum": ["player1", "player2", "draw", "disputed_draw"]
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

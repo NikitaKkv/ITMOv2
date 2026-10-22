@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "skills": {
+    "python-code-style": {
+      "source": "wshobson/agents",
+      "sourceType": "github",
+      "skillPath": "plugins/python-development/skills/python-code-style/SKILL.md",
+      "computedHash": "35ed0c437f33462187b0a89da8e5bfe9ac259dbc8731257c5445f1a5e1229acf"
+    },
+    "tdd": {
+      "source": "mattpocock/skills",
+      "sourceType": "github",
+      "skillPath": "skills/engineering/tdd/SKILL.md",
+      "computedHash": "9ce12c4a1e209e557fcf9d02086ade3d7ffdb976186018fc1b063b4164246004"
+    },
+    "web-code-style": {
+      "source": "rockcookies/skills",
+      "sourceType": "github",
+      "skillPath": "skills/custom/web-code-style/SKILL.md",
+      "computedHash": "6e61a2d10fc129f5b0c8463b850054394e747b8154bad3bece4a3321a7570b04"
+    }
+  }
+}
