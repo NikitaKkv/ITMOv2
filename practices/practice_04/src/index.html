@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WordBridge — Ассоциативный мост</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Background Dot Grid Pattern from Genesis Design System -->
+  <div class="dot-grid-bg" aria-hidden="true"></div>
+
+  <div class="app-container">
+    <!-- Top Navigation (56px) -->
+    <header class="top-nav">
+      <div class="nav-left">
+        <a href="#" class="brand-logo">
+          <span class="logo-mark">WB</span>
+          <span class="logo-text">WordBridge</span>
+        </a>
+        <div class="mode-tabs" role="tablist" aria-label="Режимы игры">
+          <button id="mode-solo-tab" class="tab-btn active" role="tab" aria-selected="true" type="button">
+            🎯 Соло
+          </button>
+          <button id="mode-duel-tab" class="tab-btn" role="tab" aria-selected="false" type="button">
+            ⚔️ Дуэль 2P
+          </button>
+        </div>
+      </div>
+
+      <div class="nav-right">
+        <button id="random-pair-btn" class="btn btn-secondary" title="Выбрать случайную пару слов" type="button">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <circle cx="15.5" cy="8.5" r="1.5"/>
+            <circle cx="15.5" cy="15.5" r="1.5"/>
+            <circle cx="8.5" cy="15.5" r="1.5"/>
+          </svg>
+          Случайная пара
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="main-content">
+      <!-- Duel Control & Status Bar (visible in Duel mode) -->
+      <section class="duel-bar hidden" id="duel-bar">
+        <div class="duel-submodes">
+          <button id="duel-submode-race" class="subtab-btn active" type="button">⚡ Гонка (одна пара)</button>
+          <button id="duel-submode-challenge" class="subtab-btn" type="button">🎯 Вызов (загадка)</button>
+        </div>
+        <div class="duel-turn-badge" id="duel-turn-badge">
+          <span class="turn-dot pulse"></span>
+          <span class="turn-text" id="duel-turn-text">Ход: Игрок 1</span>
+          <span class="turn-round-chip" id="duel-round-chip">Раунд 1/2</span>
+        </div>
+      </section>
+
+      <!-- Challenge Word Picker Card (visible in challenge setup phases) -->
+      <section class="challenge-setup-card hidden" id="challenge-setup-card">
+        <div class="challenge-setup-header">
+          <div class="challenge-icon">🎯</div>
+          <div class="challenge-titles">
+            <h2 class="card-title" id="challenge-setup-title">Игрок 1: загадай пару для Игрока 2</h2>
+            <p class="card-subtitle">Придумай два несвязанных слова, чтобы сопернику пришлось построить хитрый мост!</p>
+          </div>
+        </div>
+        <form id="challenge-pair-form" class="challenge-form">
+          <div class="challenge-inputs-row">
+            <div class="challenge-input-col">
+              <label for="custom-start-input" class="field-label">Стартовое слово</label>
+              <input type="text" id="custom-start-input" class="text-input" placeholder="например: Кактус" maxlength="40" autocomplete="off">
+            </div>
+            <div class="challenge-arrow">➔</div>
+            <div class="challenge-input-col">
+              <label for="custom-target-input" class="field-label">Целевое слово</label>
+              <input type="text" id="custom-target-input" class="text-input" placeholder="например: Балет" maxlength="40" autocomplete="off">
+            </div>
+          </div>
+          <div class="challenge-actions">
+            <button type="button" id="challenge-random-btn" class="btn btn-secondary btn-sm">🎲 Случайная идея</button>
+            <button type="submit" class="btn btn-primary" id="challenge-submit-btn">Готово, передать ход ➔</button>
+          </div>
+          <p class="error-message hidden" id="challenge-error-message"></p>
+        </form>
+      </section>
+
+      <!-- Pass Turn Blind Card ("Не подглядывай!") -->
+      <section class="pass-turn-card hidden" id="pass-turn-card">
+        <div class="pass-turn-content">
+          <div class="pass-turn-icon">🙈</div>
+          <h2 class="pass-turn-title">Не подглядывай!</h2>
+          <p class="pass-turn-subtitle" id="pass-turn-message">Игрок 1 завершил свой мост. Передайте управление Игроку 2!</p>
+          <div class="pass-turn-security-note">
+            <span class="lock-icon">🔒</span>
+            <span>Цепочка слов скрыта для честной игры. Игрок 2 будет строить мост с чистого листа.</span>
+          </div>
+          <button id="pass-turn-confirm-btn" class="btn btn-primary btn-large" type="button">
+            Я готов, начать ход ➔
+          </button>
+        </div>
+      </section>
+
+      <!-- Showdown Screen -->
+      <section class="showdown-card hidden" id="showdown-card">
+        <div class="showdown-header">
+          <span class="badge-pill showdown-badge">Финальный экран</span>
+          <h2 class="showdown-title">Битва мостов: Showdown</h2>
+          <p class="showdown-subtitle">Сравните ассоциативные цепочки игроков и оцените честность переходов</p>
+        </div>
+
+        <!-- Overall Verdict Banner -->
+        <div class="showdown-verdict-banner" id="showdown-verdict-banner">
+          <div class="verdict-icon" id="showdown-verdict-icon">🏆</div>
+          <div class="verdict-content">
+            <h3 class="verdict-title" id="showdown-verdict-title">Победитель: Игрок 1!</h3>
+            <p class="verdict-desc" id="showdown-verdict-desc">Игрок 1 построил более короткий мост (3 против 5 шагов).</p>
+          </div>
+        </div>
+
+        <!-- Side-by-side columns -->
+        <div class="showdown-duel-grid">
+          <!-- Player 1 Column -->
+          <div class="showdown-column" id="showdown-p1-col">
+            <div class="col-player-head">
+              <div class="player-pill">
+                <span class="player-avatar-badge p1-badge">P1</span>
+                <div>
+                  <h3 class="col-player-name">Игрок 1</h3>
+                  <span class="steps-chip" id="showdown-p1-steps-chip">3 шага</span>
+                </div>
+              </div>
+              <span class="verdict-status-tag tag-neutral" id="showdown-p1-status-tag">Ожидает судейства</span>
+            </div>
+
+            <div class="showdown-chain-flow" id="showdown-p1-chain-flow"></div>
+
+            <!-- Mutual review box -->
+            <div class="col-judging-panel">
+              <span class="judging-caption">Вердикт соперника (Игрок 2):</span>
+              <div class="judging-buttons">
+                <button id="p1-approve-btn" class="btn btn-secondary btn-sm btn-approve" type="button">
+                  Одобрить мост 👍
+                </button>
+                <button id="p1-dispute-btn" class="btn btn-secondary btn-sm btn-dispute" type="button">
+                  Оспорить связь 🤨
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Player 2 Column -->
+          <div class="showdown-column" id="showdown-p2-col">
+            <div class="col-player-head">
+              <div class="player-pill">
+                <span class="player-avatar-badge p2-badge">P2</span>
+                <div>
+                  <h3 class="col-player-name">Игрок 2</h3>
+                  <span class="steps-chip" id="showdown-p2-steps-chip">5 шагов</span>
+                </div>
+              </div>
+              <span class="verdict-status-tag tag-neutral" id="showdown-p2-status-tag">Ожидает судейства</span>
+            </div>
+
+            <div class="showdown-chain-flow" id="showdown-p2-chain-flow"></div>
+
+            <!-- Mutual review box -->
+            <div class="col-judging-panel">
+              <span class="judging-caption">Вердикт соперника (Игрок 1):</span>
+              <div class="judging-buttons">
+                <button id="p2-approve-btn" class="btn btn-secondary btn-sm btn-approve" type="button">
+                  Одобрить мост 👍
+                </button>
+                <button id="p2-dispute-btn" class="btn btn-secondary btn-sm btn-dispute" type="button">
+                  Оспорить связь 🤨
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Showdown Footer Navigation -->
+        <div class="showdown-footer">
+          <button id="showdown-rematch-btn" class="btn btn-primary" type="button">
+            Сыграть реванш ⚔️
+          </button>
+          <button id="showdown-solo-btn" class="btn btn-secondary" type="button">
+            Одиночный режим 🎯
+          </button>
+        </div>
+      </section>
+
+      <!-- Active Chain Workspace (Used in Solo, and during duel active turns) -->
+      <div id="game-workspace">
+        <!-- Pair Header Card -->
+        <section class="pair-card" id="pair-card">
+          <div class="pair-column">
+            <span class="tag-status tag-success">СТАРТ</span>
+            <h2 class="word-title" id="start-word-display">Чайник</h2>
+          </div>
+
+          <div class="pair-divider">
+            <div class="bridge-arrow-icon">➔</div>
+            <span class="pair-hint">построй путь</span>
+          </div>
+
+          <div class="pair-column">
+            <span class="tag-status tag-primary">ЦЕЛЬ</span>
+            <h2 class="word-title" id="target-word-display">Чёрная дыра</h2>
+          </div>
+        </section>
+
+        <!-- Interactive Bridge Visualizer -->
+        <section class="bridge-section" id="bridge-section">
+          <div class="bridge-header">
+            <div class="bridge-stats">
+              <span class="stats-label">Длина моста:</span>
+              <span class="stats-counter" id="step-counter">0 шагов</span>
+            </div>
+
+            <div class="bridge-actions-bar">
+              <button id="undo-btn" class="btn btn-ghost btn-sm" disabled title="Отменить последнее добавленное слово" type="button">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                  <path d="M3 3v5h5"/>
+                </svg>
+                Отменить шаг (Undo)
+              </button>
+              <button id="reset-btn" class="btn btn-ghost btn-sm text-destructive" title="Начать цепочку заново" type="button">
+                Сброс
+              </button>
+            </div>
+          </div>
+
+          <!-- Dynamic Chain Nodes Container -->
+          <div class="chain-container" id="chain-container">
+            <!-- Rendered dynamically by app.js -->
+          </div>
+
+          <!-- Success Banner (for Solo mode only) -->
+          <div class="completion-banner hidden" id="completion-banner">
+            <div class="completion-icon">🎉</div>
+            <div class="completion-text">
+              <h3>Мост успешно замкнут!</h3>
+              <p id="completion-summary">Вы связали слова за 4 ассоциативных шага.</p>
+            </div>
+            <button id="next-round-btn" class="btn btn-primary" type="button">
+              Новая пара ➔
+            </button>
+          </div>
+        </section>
+
+        <!-- Input Bar (Below Bridge) -->
+        <section class="input-section" id="input-section">
+          <form id="word-form" class="word-form">
+            <div class="input-wrapper">
+              <input 
+                type="text" 
+                id="word-input" 
+                class="text-input" 
+                placeholder="Введи ассоциацию к последнему слову (например: кипяток)..." 
+                autocomplete="off"
+                maxlength="40"
+              >
+              <span class="input-shortcut">Enter ↵</span>
+            </div>
+            <button type="submit" class="btn btn-primary" id="add-word-btn">
+              Добавить шаг
+            </button>
+          </form>
+          <p class="error-message hidden" id="error-message"></p>
+        </section>
+      </div>
+
+      <!-- How it works helper -->
+      <footer class="rules-hint-card" id="rules-hint-card">
+        <div class="hint-header">
+          <span class="hint-icon">💡</span>
+          <strong id="rules-hint-title">Как работает построитель ассоциаций:</strong>
+        </div>
+        <p id="rules-hint-body">Каждое новое слово должно логически или образно связываться с <em>предыдущим</em>. Твоя цель — дойти до целевого слова за наименьшее число промежуточных мостиков!</p>
+      </footer>
+    </main>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
