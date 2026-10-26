@@ -55,6 +55,49 @@ class HttpTest(unittest.TestCase):
     def test_transport_only_binds_loopback(self):
         self.assertEqual(self.server.server_address[0], "127.0.0.1")
 
+    def test_http_price_tampering_blocked(self):
+        status, _, body = self.call("POST", "/login", {"username": "alice", "password": "learn-alice"})
+        self.assertEqual(status, 200)
+        token = json.loads(body)["token"]
+        status, _, resp_body = self.call("POST", "/orders", {"product": "chair", "price": 0.01}, {"X-Token": token})
+        self.assertEqual(status, 400)
+        self.assertEqual(json.loads(resp_body), {"error": "invalid price"})
+
+    def test_http_role_spoofing_blocked(self):
+        status, _, body = self.call("POST", "/login", {"username": "alice", "password": "learn-alice"})
+        self.assertEqual(status, 200)
+        token = json.loads(body)["token"]
+        status, _, _ = self.call("GET", "/admin/export", headers={"X-Token": token, "X-Role": "staff"})
+        self.assertEqual(status, 403)
+        status, _, _ = self.call("GET", "/admin/export", headers={"X-Role": "staff"})
+        self.assertEqual(status, 401)
+
+    def test_http_files_idor_and_traversal_blocked(self):
+        status, _, body = self.call("POST", "/login", {"username": "alice", "password": "learn-alice"})
+        self.assertEqual(status, 200)
+        token = json.loads(body)["token"]
+        status, _, _ = self.call("GET", "/files?user=bob&path=receipt.txt", headers={"X-Token": token})
+        self.assertEqual(status, 403)
+        status, _, _ = self.call("GET", "/files?user=..&path=private/operator-note.txt", headers={"X-Token": token})
+        self.assertEqual(status, 403)
+
+    def test_http_assistant_tool_permissions(self):
+        status, _, body = self.call("POST", "/login", {"username": "alice", "password": "learn-alice"})
+        self.assertEqual(status, 200)
+        token = json.loads(body)["token"]
+        status, _, _ = self.call("POST", "/assistant/execute", {
+            "decision": {"tool": "delete_tree", "arguments": {"path": "files"}}
+        }, headers={"X-Token": token})
+        self.assertEqual(status, 403)
+        status, _, _ = self.call("POST", "/assistant/execute", {
+            "decision": {"tool": "export_profiles"}
+        }, headers={"X-Token": token})
+        self.assertEqual(status, 403)
+        status, _, _ = self.call("POST", "/assistant/execute", {
+            "decision": {"tool": "export_profiles"}
+        })
+        self.assertEqual(status, 401)
+
 
 if __name__ == "__main__":
     unittest.main()
