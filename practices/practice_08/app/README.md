@@ -25,6 +25,7 @@
 - React 19 + TypeScript, TanStack Start / Router, Vite
 - Tailwind CSS v4, **shadcn/ui** (`src/components/ui`, стиль new-york)
 - Тема: `src/styles.css` — oklch-токены, `--ring`, `--success`, шрифт Inter
+- Тесты: Vitest + jsdom + MSW (компоненты) и **Playwright** (реальный Chromium)
 
 ## Запуск
 
@@ -40,7 +41,10 @@ npm run dev                  # http://localhost:8080
 ## Тесты
 
 ```bash
-npm test
+npm test                          # 27 компонентных тестов: Vitest + jsdom + MSW
+npx playwright install chromium   # один раз: браузер для e2e
+npm run test:e2e                  # 7 e2e в настоящем Chromium
+npm run test:all                  # компонентные + e2e
 ```
 
 27 тестов в 8 файлах, ответы сервера подменяются через **MSW** (`src/test/mocks.ts`)
@@ -62,6 +66,27 @@ MSW-ответ:
   "type": "bug", "confidence": 0.98, "label": "bug", "needsTriage": false }
 ```
 
+### E2E в настоящем браузере (Playwright)
+
+`playwright.config.ts` сам поднимает dev-сервер на `127.0.0.1:4173` и передаёт приложению
+`VITE_N8N_WEBHOOK_URL=http://127.0.0.1:4173/mock/webhook`. Запрос перехватывается
+`page.route()` и получает тот же JSON, что отдаёт n8n, поэтому прогон не зависит от сети
+и не создаёт лейблы в GitHub.
+
+| Файл | Что проверяет |
+|---|---|
+| `e2e/classify.spec.ts` | пустой экран, валидация без запроса, полный сценарий, загрузка, ошибка 502 с повтором, двойной submit, Tab/фокус/Enter |
+| `e2e/live.spec.ts` | живой webhook n8n: реальный запрос, ответ LLM и лейбл в GitHub |
+
+Живой прогон по умолчанию пропускается — он меняет GitHub. Запуск:
+
+```bash
+npm run test:e2e:live
+```
+
+Помимо проверок, e2e прикладывает скриншоты состояний к HTML-отчёту
+(`playwright-report/index.html`).
+
 ## Структура
 
 ```
@@ -71,7 +96,9 @@ src/
   lib/api.ts                    единственный модуль запросов к n8n
   lib/validation.ts             правила валидации формы
   lib/types.ts                  типы формы и ответа
-  test/                         MSW-сервер, моки, тесты
+  test/                         MSW-сервер, моки, компонентные тесты
+e2e/                            Playwright: сценарии в Chromium и live-прогон
+playwright.config.ts            dev-сервер, браузер, перехват webhook
 ```
 
 ## Использование AI

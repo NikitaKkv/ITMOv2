@@ -33,3 +33,4 @@ use the editor.
 - Issue Classifier screen lives in `src/components/issue-classifier/`.
 - Without `?state=` the screen runs the real scenario: `submit()` validates the form, posts to the n8n webhook via `src/lib/api.ts` and renders the response; an `inFlight` ref blocks double submission.
 - The demo state switcher is a floating "Демо" panel (`DemoPanel.tsx`) shown in every build, including published; the `/` route reads `?state=` via `validateSearch` (`parseScreenState`) and the panel writes it back with `replace`, so review links open a design-preview state, while no param keeps the real flow.
+- E2E live in `e2e/` and drive real Chromium via Playwright (`playwright.config.ts`, port 4173). Tests wait for `data-app-hydrated` on `<html>`, set by `IssueClassifier` after mount; keep that marker, otherwise submit happens before React hydration.

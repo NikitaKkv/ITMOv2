@@ -43,6 +43,11 @@ export function IssueClassifier({ demoState, onDemoStateChange }: Props) {
   const inFlight = useRef(false);
   const demoTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Маркер для e2e: до гидратации форма отправилась бы нативным GET-запросом.
+  useEffect(() => {
+    document.documentElement.dataset["appHydrated"] = "true";
+  }, []);
+
   // Follow URL changes from the demo panel, back/forward or an edited ?state= link.
   useEffect(() => {
     if (!demoState) return;
