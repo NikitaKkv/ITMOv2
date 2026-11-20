@@ -55,8 +55,8 @@ export async function fillForm(page: Page, form: typeof FORM = FORM) {
 }
 
 /** Открывает приложение и ждёт гидратацию React, иначе submit уйдёт нативным GET. */
-export async function gotoApp(page: Page) {
-  await page.goto("/");
+export async function gotoApp(page: Page, path = "/") {
+  await page.goto(path);
   await page.waitForFunction(() => document.documentElement.dataset["appHydrated"] === "true");
 }
 

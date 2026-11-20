@@ -18,7 +18,16 @@ export default defineConfig({
   retries: process.env["CI"] ? 2 : 0,
   reporter: [["list"], ["html", { open: "never" }]],
   timeout: 30_000,
-  expect: { timeout: 7_000 },
+  expect: {
+    timeout: 7_000,
+    toHaveScreenshot: {
+      animations: "disabled",
+      caret: "hide",
+      maxDiffPixelRatio: 0.005,
+    },
+  },
+  // Платформенные baseline лежат рядом с ручными скриншотами, но не заменяют их.
+  snapshotPathTemplate: "{testDir}/../screenshots/baseline/{arg}-{projectName}-{platform}{ext}",
   use: {
     baseURL: BASE_URL,
     trace: "on-first-retry",

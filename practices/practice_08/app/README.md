@@ -43,9 +43,13 @@ npm run dev                  # http://localhost:8080
 ```bash
 npm test                          # 27 компонентных тестов: Vitest + jsdom + MSW
 npx playwright install chromium   # один раз: браузер для e2e
-npm run test:e2e                  # 7 e2e в настоящем Chromium
+npm run test:e2e                  # 13 e2e: сценарии + скриншоты + axe (live skipped)
 npm run test:e2e:headed           # то же с видимым окном браузера
 npm run test:e2e:ui               # Playwright UI для отладки
+npm run test:e2e:visual           # только скриншотные тесты
+npm run test:e2e:update           # обновить эталоны после просмотра diff
+npm run test:e2e:a11y             # только проверка axe
+npm run test:e2e:live             # живой webhook n8n
 npm run test:all                  # компонентные + e2e
 ```
 
@@ -86,6 +90,8 @@ MSW-ответ:
 | Файл | Что проверяет |
 |---|---|
 | `e2e/classify.spec.ts` | пустой экран, валидация без запроса, полный сценарий, загрузка, ошибка 502 с повтором, двойной submit, Tab/фокус/Enter |
+| `e2e/visual.spec.ts` | 5 состояний: сравнение с platform-specific эталоном |
+| `e2e/a11y.spec.ts` | axe-core: подписи, ARIA, контраст (WCAG A/AA) |
 | `e2e/live.spec.ts` | живой webhook n8n: реальный запрос, ответ LLM и лейбл в GitHub |
 
 Живой прогон по умолчанию пропускается — он меняет GitHub. Запуск:
@@ -97,6 +103,38 @@ npm run test:e2e:live
 Помимо проверок, e2e прикладывает скриншоты состояний к HTML-отчёту
 (`playwright-report/index.html`).
 
+### Скриншотные тесты
+
+В проекте два вида снимков:
+
+| Папка | Назначение |
+|---|---|
+| `screenshots/*.png` | ручные снимки рабочего приложения: эталон для глаз и защиты |
+| `screenshots/baseline/*-chromium-linux.png` | машинные эталоны Playwright для регрессии |
+
+Главное правило: **эталон — это снимок приложения, проверенный человеком, а не файл макета.**
+Поэтому визуальный тест сравнивает рабочий интерфейс с утверждённым снимком этого же
+приложения, а не с картинкой из Lovable.
+
+Тест снимает состояния `?state=empty|filled|loading|success|error` при 1280×720,
+с фиксированными данными, отключёнными анимациями и загруженным Inter. Демо-панель
+в эталон не входит. Baseline привязан к платформе (`chromium-linux`): на другой ОС
+первый прогон создаст свой эталон.
+
+```bash
+npm run test:e2e:visual            # сравнить с эталоном
+npx playwright show-report         # expected / actual / diff
+npm run test:e2e:update            # обновить эталон после просмотра diff
+```
+
+Эталоны не обновляются автоматически «ради зелёного теста»: сначала смотрим diff,
+потом решаем, ожидаемое это изменение или ошибка. Обновлённые снимки коммитятся
+вместе с изменением интерфейса.
+
+Скриншотный тест отвечает только на вопрос «внешний вид изменился?». Поведение
+проверяют `classify.spec.ts` и компонентные тесты, доступность — `axe` и ручная
+проверка, удобство и пользу — человек.
+
 ## Структура
 
 ```
@@ -107,8 +145,10 @@ src/
   lib/validation.ts             правила валидации формы
   lib/types.ts                  типы формы и ответа
   test/                         MSW-сервер, моки, компонентные тесты
-e2e/                            Playwright: сценарии в Chromium и live-прогон
-playwright.config.ts            dev-сервер, браузер, перехват webhook
+e2e/                            Playwright: сценарии, скриншоты, axe, live-прогон
+screenshots/                    ручные снимки состояний
+screenshots/baseline/           машинные эталоны Playwright (chromium-linux)
+playwright.config.ts            dev-сервер, браузер, перехват webhook, эталоны
 ```
 
 ## Использование AI

@@ -15,6 +15,9 @@
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:ui": "playwright test --ui",
+    "test:e2e:visual": "playwright test e2e/visual.spec.ts",
+    "test:e2e:update": "playwright test e2e/visual.spec.ts --update-snapshots",
+    "test:e2e:a11y": "playwright test e2e/a11y.spec.ts",
     "test:e2e:live": "RUN_LIVE_E2E=1 VITE_N8N_WEBHOOK_URL=https://n8n-itmo.cyrweb.ru/webhook/classify playwright test e2e/live.spec.ts",
     "test:all": "npm test && npm run test:e2e"
   },
@@ -77,6 +80,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@eslint/js": "^9.32.0",
     "@lovable.dev/vite-tanstack-config": "2.27.2",
     "@playwright/test": "^1.65.1",

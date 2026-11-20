@@ -20,7 +20,10 @@ export function DemoPanel({ value, onChange }: Props) {
   }, [open]);
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-2 sm:bottom-6 sm:right-6">
+    <div
+      data-testid="demo-panel"
+      className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-2 sm:bottom-6 sm:right-6"
+    >
       {open && (
         <Card id="demo-panel" className="w-56 p-3">
           <p className="px-1 pb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
