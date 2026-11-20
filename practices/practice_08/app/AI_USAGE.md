@@ -64,7 +64,7 @@
 | убрали остановку при ошибках валидации | `classify-form.test.tsx` — **1 failed** |
 | убрали `if (inFlight.current) return`, запустили e2e | `e2e/classify.spec.ts` — **1 failed** (`calls` = 2) |
 | изменили отступы `space-y-8` → `space-y-12` | `e2e/visual.spec.ts` — **5 failed**, в отчёте expected/actual/diff |
-| вернули код | 27/27 unit, 13/13 e2e passed |
+| вернули код | 27/27 unit, 13 e2e passed, 1 live skipped |
 
 ## Визуальная регрессия
 

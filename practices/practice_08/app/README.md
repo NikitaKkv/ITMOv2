@@ -41,7 +41,7 @@ npm run dev                  # http://localhost:8080
 ## Тесты
 
 ```bash
-npm test                          # 27 компонентных тестов: Vitest + jsdom + MSW
+npm test                          # 27 клиентских тестов: юнит + компоненты, Vitest + jsdom + MSW
 npx playwright install chromium   # один раз: браузер для e2e
 npm run test:e2e                  # 13 e2e: сценарии + скриншоты + axe (live skipped)
 npm run test:e2e:headed           # то же с видимым окном браузера
